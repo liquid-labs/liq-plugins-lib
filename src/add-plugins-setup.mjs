@@ -4,6 +4,7 @@ import { httpSmartResponse } from '@liquid-labs/http-smart-response'
 import { tryExec } from '@liquid-labs/shell-toolkit'
 
 import { determineRegistryData } from './lib/determine-registry-data'
+import { selectMatchingPlugins } from './lib/select-matching-plugins'
 
 const addPluginsSetup = ({ pluginsDesc }) => {
   const help = {
@@ -29,7 +30,7 @@ const addPluginsSetup = ({ pluginsDesc }) => {
   return { help, method, parameters }
 }
 
-const addPluginsHandler = ({ installedPluginsRetriever, pluginPkgDir }) =>
+const addPluginsHandler = ({ hostVersion, installedPluginsRetriever, pluginPkgDir, pluginType }) =>
   ({ app, cache, model, reporter }) => async(req, res) => {
     const installedPlugins = installedPluginsRetriever({ app, model })
     const { npmNames } = req.vars
@@ -57,8 +58,11 @@ const addPluginsHandler = ({ installedPluginsRetriever, pluginPkgDir }) =>
       }
 
       if (matched === false) {
-        registryData = registryData
-      || await determineRegistryData({ cache, registries : app.liq.serverSettings.registries })
+        registryData = registryData 
+          || await determineRegistryData({ cache, registries : app.liq.serverSettings.registries })
+
+        const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
+
         if (!Object.values(registryData).some(({ plugins }) => plugins.some(({ npmName }) => npmName === testName))) {
           throw createError.NotFound(`No such plugin package '${testName}' found in the registries.`)
         }
