@@ -4,7 +4,12 @@
   "description": "",
   "main": "dist/liq-plugins-lib.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "make",
+    "lint": "make lint",
+    "lint:fix": "make lint-fix",
+    "test": "make test",
+    "preversion": "make test && make lint",
+    "qa": "make qa"
   },
   "keywords": [],
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
@@ -13,5 +18,17 @@
   "bugs": {
     "url": "https://github.com/liquid-labs/liq-plugins-lib/issues"
   },
-  "homepage": "https://github.com/liquid-labs/liq-plugins-lib#readme"
+  "homepage": "https://github.com/liquid-labs/liq-plugins-lib#readme",
+  "dependencies": {
+    "@liquid-labs/http-smart-response": "^1.0.0-alpha.3",
+    "@liquid-labs/liq-defaults": "^1.0.0-alpha.1",
+    "@liquid-labs/shell-toolkit": "^1.0.0-alpha.4",
+    "http-errors": "^2.0.0",
+    "js-yaml": "^4.1.0",
+    "semver": "^7.5.3"
+  },
+  "devDependencies": {
+    "@liquid-labs/catalyst-scripts-node-project": "^1.0.0-alpha.18",
+    "@liquid-labs/weak-cache": "^1.0.0-alpha.1"
+  }
 }

@@ -1,0 +1,5 @@
+export * from './lib'
+export * from './add-plugins-setup'
+export * from './details-plugin-setup'
+export * from './list-plugins-setup'
+export * from './remove-plugins-setup'
