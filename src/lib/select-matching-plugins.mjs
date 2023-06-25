@@ -4,7 +4,7 @@ const selectMatchingPlugins = ({ hostVersion, installedPlugins, pluginType, regi
   return Object.entries(registryData).reduce((acc, entry) => {
     const [source, rd] = entry
     const { series } = rd
-    
+
     const matchingSeries = series.find(({ versions }) =>
       semver.satisfies(hostVersion, versions, { includePrerelease : true }))
 

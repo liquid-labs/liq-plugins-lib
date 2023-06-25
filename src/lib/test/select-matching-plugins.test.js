@@ -46,13 +46,13 @@ describe('selectMatchingPlugins', () => {
   const registryData = yaml.load(registryYaml)
 
   test('selects first matching series', () => {
-    const plugins = selectMatchingPlugins({ hostVersion: '2.3.0', pluginType: 'handlers', registryData})
+    const plugins = selectMatchingPlugins({ hostVersion : '2.3.0', pluginType : 'handlers', registryData })
     expect(plugins).toHaveLength(1)
     expect(plugins[0].npmName).toBe('@liquid-labs/liq-projects2')
   })
 
   test('combines mulitple sources', () => {
-    const plugins = selectMatchingPlugins({ hostVersion: '1.3.0', pluginType: 'handlers', registryData})
+    const plugins = selectMatchingPlugins({ hostVersion : '1.3.0', pluginType : 'handlers', registryData })
     expect(plugins).toHaveLength(2)
     expect(plugins[0].npmName).toBe('@liquid-labs/liq-projects')
     expect(plugins[1].npmName).toBe('@foo/liq-audits')

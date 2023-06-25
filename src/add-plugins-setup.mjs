@@ -50,7 +50,7 @@ const addPluginsHandler = ({ hostVersion, installedPluginsRetriever, pluginPkgDi
       }
 
       // is it a development package? Notice, we don't check our registry because these might not be registered
-      for (const projectSpec of model.playground.projects.list({ rawData: true })) {
+      for (const projectSpec of model.playground.projects.list({ rawData : true })) {
         if (testName === projectSpec.packageJSON?.name) {
           devInstalls.push('file:' + projectSpec.localProjectPath)
           matched = true
@@ -59,7 +59,7 @@ const addPluginsHandler = ({ hostVersion, installedPluginsRetriever, pluginPkgDi
       }
 
       if (matched === false) {
-        registryData = registryData 
+        registryData = registryData
           || await determineRegistryData({ cache, registries : app.liq.serverSettings.registries })
 
         const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
@@ -75,7 +75,7 @@ const addPluginsHandler = ({ hostVersion, installedPluginsRetriever, pluginPkgDi
     const devInstalled = devInstalls.length > 0
     const anyInstalled = prodInstalled || devInstalled
 
-    let msg = 
+    let msg =
       (anyInstalled
         ? '<em>Installed<rst> <code>'
           + ((devInstalled
