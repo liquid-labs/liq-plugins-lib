@@ -1,4 +1,4 @@
-/* global describe expect test */
+/* global afterAll afterEach beforeAll beforeEach describe expect jest test */
 import { WeakCache } from '@liquid-labs/weak-cache'
 
 import { determineRegistryData } from '../determine-registry-data'
@@ -6,18 +6,18 @@ import { determineRegistryData } from '../determine-registry-data'
 const mockFetch = (results) => {
   global.fetch = jest.fn(() =>
     Promise.resolve({
-      text: () => results
+      text : () => results
     })
   )
 }
 
 describe('determineRegistryData', () => {
   let cache, origFetch
-  const jsonRegistries = [ { url: 'https://foo.com/registry.json' }]
-  const yamlRegistries = [ { url: 'https://foo.com/registry.yaml' }]
-  const registryJSON  = { meta: { id: 'abc' } }
+  const jsonRegistries = [{ url : 'https://foo.com/registry.json' }]
+  const yamlRegistries = [{ url : 'https://foo.com/registry.yaml' }]
+  const registryJSON = { meta : { id : 'abc' } }
   const results = {
-    abc: registryJSON
+    abc : registryJSON
   }
 
   beforeAll(() => { origFetch = global.fetch })
@@ -28,33 +28,33 @@ describe('determineRegistryData', () => {
   })
   afterEach(() => { cache?.release() })
 
-  test('will retrieve JSON data', async () => {
+  test('will retrieve JSON data', async() => {
     mockFetch(JSON.stringify(registryJSON))
 
-    const data = await determineRegistryData({ cache, registries: jsonRegistries })
+    const data = await determineRegistryData({ cache, registries : jsonRegistries })
 
     expect(data).toEqual(results)
     expect(fetch).toHaveBeenCalledTimes(1)
   })
 
-  test('will retrieve YAML data', async () => {
+  test('will retrieve YAML data', async() => {
     mockFetch('meta:\n  id: abc')
 
-    const data = await determineRegistryData({ cache, registries: yamlRegistries })
+    const data = await determineRegistryData({ cache, registries : yamlRegistries })
 
     expect(data).toEqual(results)
     expect(fetch).toHaveBeenCalledTimes(1)
   })
 
-  test('will use the cache on subsequent retrievals', async () => {
+  test('will use the cache on subsequent retrievals', async() => {
     mockFetch(JSON.stringify(registryJSON))
 
-    let data = await determineRegistryData({ cache, registries: jsonRegistries })
+    let data = await determineRegistryData({ cache, registries : jsonRegistries })
     expect(data).toEqual(results)
     expect(fetch).toHaveBeenCalledTimes(1)
 
-    data = await determineRegistryData({ cache, registries: jsonRegistries })
+    data = await determineRegistryData({ cache, registries : jsonRegistries })
     expect(data).toEqual(results)
-    expect(fetch).toHaveBeenCalledTimes(1)    
+    expect(fetch).toHaveBeenCalledTimes(1)
   })
 })

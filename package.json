@@ -21,11 +21,11 @@
   "homepage": "https://github.com/liquid-labs/liq-plugins-lib#readme",
   "dependencies": {
     "@liquid-labs/http-smart-response": "^1.0.0-alpha.3",
-    "@liquid-labs/liq-core": "^1.0.0-alpha.12",
     "@liquid-labs/liq-defaults": "^1.0.0-alpha.1",
     "@liquid-labs/shell-toolkit": "^1.0.0-alpha.4",
     "http-errors": "^2.0.0",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "semver": "^7.5.3"
   },
   "devDependencies": {
     "@liquid-labs/catalyst-scripts-node-project": "^1.0.0-alpha.18",

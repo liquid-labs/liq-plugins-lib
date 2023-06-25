@@ -1,3 +1,7 @@
+import createError from 'http-errors'
+
+import { httpSmartResponse } from '@liquid-labs/http-smart-response'
+
 const detailsPluginSetup = ({ pluginsDesc }) => {
   const help = {
     name        : `${pluginsDesc} plugins details`,
@@ -11,4 +15,18 @@ const detailsPluginSetup = ({ pluginsDesc }) => {
   return { help, method, parameters }
 }
 
-export { detailsPluginSetup }
+const detailsPluginHandler = ({ installedPluginsRetriever }) =>
+  ({ app, cache, model, reporter }) => async(req, res) => {
+    const installedPlugins = installedPluginsRetriever({ app, model })
+    const { pluginName } = req.vars
+
+    const pluginData = installedPlugins.find(({ name }) => pluginName === name)
+    if (!pluginData) {
+      throw createError.NotFound(`No such plugin '${pluginName}' found.`)
+    }
+    // else
+
+    httpSmartResponse({ data : pluginData, req, res })
+  }
+
+export { detailsPluginHandler, detailsPluginSetup }
