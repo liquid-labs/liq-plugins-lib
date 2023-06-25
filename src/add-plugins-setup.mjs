@@ -6,7 +6,7 @@ import { tryExec } from '@liquid-labs/shell-toolkit'
 import { determineRegistryData } from './lib/determine-registry-data'
 import { selectMatchingPlugins } from './lib/select-matching-plugins'
 
-const addPluginsSetup = ({ pluginsDesc }) => {
+const addPluginsSetup = ({ hostVersionRetriever, pluginsDesc, pluginType }) => {
   const help = {
     name        : `add ${pluginsDesc} plugins`,
     summary     : `Installs one or more ${pluginsDesc} plugins.`,
@@ -19,10 +19,11 @@ const addPluginsSetup = ({ pluginsDesc }) => {
       name         : 'npmNames',
       isMultivalue : true,
       description  : 'The plugins to install, by their NPM package name. Include multiple times to install multiple plugins.',
-      optionsFunc  : async({ app, cache }) => {
-        // TODO: look for makrers in packaeg.json and incorproate development packages as well?
+      optionsFunc  : async({ app, model, cache }) => {
+        const hostVersion = hostVersionRetriever({ app, model })
         const registryData = await determineRegistryData({ cache, registries : app.liq.serverSettings.registries })
-        return registryData.reduce((acc, { plugins }) => acc.push(plugins.map(({ npmName }) => npmName)))
+        const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
+        return plugins.map(({ npmName }) => npmName)
       }
     }
   ]
@@ -48,8 +49,8 @@ const addPluginsHandler = ({ hostVersion, installedPluginsRetriever, pluginPkgDi
         continue
       }
 
-      // is it a development package? Notice, we don't check our registry unless we have to
-      for (const projectSpec of Object.values(model.playground.projects)) {
+      // is it a development package? Notice, we don't check our registry because these might not be registered
+      for (const projectSpec of model.playground.projects.list({ rawData: true })) {
         if (testName === projectSpec.packageJSON?.name) {
           devInstalls.push('file:' + projectSpec.localProjectPath)
           matched = true
@@ -63,7 +64,7 @@ const addPluginsHandler = ({ hostVersion, installedPluginsRetriever, pluginPkgDi
 
         const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
 
-        if (!Object.values(registryData).some(({ plugins }) => plugins.some(({ npmName }) => npmName === testName))) {
+        if (!plugins.some(({ npmName }) => npmName === testName)) {
           throw createError.NotFound(`No such plugin package '${testName}' found in the registries.`)
         }
         prodInstalls.push(testName)
@@ -74,23 +75,26 @@ const addPluginsHandler = ({ hostVersion, installedPluginsRetriever, pluginPkgDi
     const devInstalled = devInstalls.length > 0
     const anyInstalled = prodInstalled || devInstalled
 
+    let msg = 
+      (anyInstalled
+        ? '<em>Installed<rst> <code>'
+          + ((devInstalled
+            ? devInstalls.join('<rst>, <code>') + '<rst> development packages'
+            : (prodInstalled ? ' and <code>' : '')))
+            + (prodInstalled ? prodInstalls.join('<rst>, <code>') + '<rst> production packages' : '')
+        : 'Nothing installed')
+      + (alreadyInstalled.length > 0
+        ? (anyInstalled ? '; <code>' : '')
+            + alreadyInstalled.join('<rst>, <code>') + '<rst> packages already installed'
+        : '')
+      + '.'
+
     if (anyInstalled === true) {
       tryExec(`cd "${pluginPkgDir}" && npm install ${prodInstalls.join(' ')} ${devInstalls.join(' ')}`)
-      await app.init({ app, model, ...app.liq.config })
+      await app.reload({ app, model, reporter, ...app.liq.config })
+      msg += ' Server endpoints reloaded.'
     }
 
-    const msg =
-  +(anyInstalled
-    ? 'Installed '
-    : ((devInstalled
-      ? devInstalls.join(', ') + 'development packages'
-      : (prodInstalled ? ' and ' : '')))
-      + (prodInstalled ? prodInstalls.join(', ' + 'production packages') : ''))
-  + (alreadyInstalled.length > 0
-    ? (anyInstalled ? '; ' : '')
-        + alreadyInstalled.join(', ') + ' packages already installed'
-    : '')
-  + '.'
     httpSmartResponse({ msg, req, res })
   }
 

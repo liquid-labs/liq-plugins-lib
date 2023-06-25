@@ -31,9 +31,9 @@ const removePluginsHandler = ({ installedPluginsRetriever, pluginPkgDir }) =>
     const npmName = pluginData.npmName
     tryExec(`cd "${(pluginPkgDir)}" && npm uninstall ${npmName}`)
 
-    await app.init({ app, model, ...app.liq.config })
+    await app.reload({ app, model, reporter, ...app.liq.config })
 
-    httpSmartResponse({ msg : `Removed '${pluginName}' plugin.`, req, res })
+    httpSmartResponse({ msg : `<em>Removed<rst> <code>${pluginName}<rst> plugin. Server endpoints refreshed.`, req, res })
   }
 
 export { removePluginsHandler, removePluginsSetup }
