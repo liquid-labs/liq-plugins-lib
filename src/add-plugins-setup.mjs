@@ -34,13 +34,13 @@ const addPluginsSetup = ({ hostVersionRetriever, pluginsDesc, pluginType }) => {
   return { help, method, parameters }
 }
 
-const addPluginsHandler = ({ 
-  hostVersionRetriever, 
-  installedPluginsRetriever, 
-  pluginPkgDirRetriever, 
+const addPluginsHandler = ({
+  hostVersionRetriever,
+  installedPluginsRetriever,
+  pluginPkgDirRetriever,
   pluginsDesc,
-  pluginType, 
-  reloadFunc 
+  pluginType,
+  reloadFunc
 }) =>
   ({ app, cache, model, reporter }) => async(req, res) => {
     const installedPlugins = installedPluginsRetriever({ app, model, reporter, req }) || []
@@ -105,7 +105,7 @@ const addPluginsHandler = ({
     console.log('pluginPkgDir:', pluginPkgDir) // DEBUG
     const pluginPkg = fsPath.join(pluginPkgDir, 'package.json')
     if (!fs.existsSync(pluginPkg)) {
-      fs.mkdirSync(pluginPkgDir, { recursive: true })
+      fs.mkdirSync(pluginPkgDir, { recursive : true })
       fs.writeFileSync(pluginPkg, '{}')
     }
 
