@@ -1,0 +1,17 @@
+Test git rev: 61516735bdb26240a7e944a15341789596fdcbaa
+
+/Users/zane/.liq/playground/liquid-labs/liq-plugins-lib/src/add-plugins-setup.mjs
+   37:29  error  Trailing spaces not allowed          no-trailing-spaces
+   38:24  error  Trailing spaces not allowed          no-trailing-spaces
+   39:29  error  Trailing spaces not allowed          no-trailing-spaces
+   40:25  error  Trailing spaces not allowed          no-trailing-spaces
+   42:14  error  Trailing spaces not allowed          no-trailing-spaces
+   43:13  error  Trailing spaces not allowed          no-trailing-spaces
+  108:36  error  Missing space after key 'recursive'  key-spacing
+
+/Users/zane/.liq/playground/liquid-labs/liq-plugins-lib/src/lib/index.mjs
+  2:42  error  Newline required at end of file but not found  eol-last
+
+✖ 8 problems (8 errors, 0 warnings)
+  8 errors and 0 warnings potentially fixable with the `--fix` option.
+
