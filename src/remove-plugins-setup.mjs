@@ -17,10 +17,10 @@ const removePluginsSetup = ({ pluginsDesc }) => {
   return { help, method, parameters }
 }
 
-const removePluginsHandler = ({ installedPluginsRetriever, pluginPkgDir }) =>
+const removePluginsHandler = ({ installedPluginsRetriever, nameKey, pluginPkgDirRetriever, reloadFunc }) =>
   ({ app, cache, model, reporter }) => async(req, res) => {
-    const installedPlugins = installedPluginsRetriever({ app, model })
-    const { pluginName } = req.vars
+    const installedPlugins = installedPluginsRetriever({ app, model, req })
+    const pluginName = req.vars[nameKey]
 
     const pluginData = installedPlugins.find(({ name }) => pluginName === name)
     if (!pluginData) {
@@ -29,9 +29,15 @@ const removePluginsHandler = ({ installedPluginsRetriever, pluginPkgDir }) =>
     // else
 
     const npmName = pluginData.npmName
+    const pluginPkgDir = pluginPkgDirRetriever({ app, model, reporter, req })
     tryExec(`cd "${(pluginPkgDir)}" && npm uninstall ${npmName}`)
 
-    await app.reload({ app, model, reporter, ...app.liq.config })
+    if (reloadFunc !== undefined) {
+      const reload = reloadFunc({ app, cache, model, reporter, req })
+      if (reload.then) {
+        await reload
+      }
+    }
 
     httpSmartResponse({ msg : `<em>Removed<rst> <code>${pluginName}<rst> plugin. Server endpoints refreshed.`, req, res })
   }

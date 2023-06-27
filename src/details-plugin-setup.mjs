@@ -15,10 +15,11 @@ const detailsPluginSetup = ({ pluginsDesc }) => {
   return { help, method, parameters }
 }
 
-const detailsPluginHandler = ({ installedPluginsRetriever }) =>
+const detailsPluginHandler = ({ installedPluginsRetriever, nameKey }) =>
   ({ app, cache, model, reporter }) => async(req, res) => {
-    const installedPlugins = installedPluginsRetriever({ app, model })
-    const { pluginName } = req.vars
+    const installedPlugins = installedPluginsRetriever({ app, model, req })
+    console.log('installedPlugins:', installedPlugins) // DEBUG
+    const pluginName = req.vars[nameKey]
 
     const pluginData = installedPlugins.find(({ name }) => pluginName === name)
     if (!pluginData) {

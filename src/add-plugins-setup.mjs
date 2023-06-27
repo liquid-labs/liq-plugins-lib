@@ -1,3 +1,6 @@
+import * as fs from 'node:fs'
+import * as fsPath from 'node:path'
+
 import createError from 'http-errors'
 
 import { httpSmartResponse } from '@liquid-labs/http-smart-response'
@@ -31,10 +34,18 @@ const addPluginsSetup = ({ hostVersionRetriever, pluginsDesc, pluginType }) => {
   return { help, method, parameters }
 }
 
-const addPluginsHandler = ({ hostVersion, installedPluginsRetriever, pluginPkgDir, pluginType }) =>
+const addPluginsHandler = ({ 
+  hostVersionRetriever, 
+  installedPluginsRetriever, 
+  pluginPkgDirRetriever, 
+  pluginsDesc,
+  pluginType, 
+  reloadFunc 
+}) =>
   ({ app, cache, model, reporter }) => async(req, res) => {
-    const installedPlugins = installedPluginsRetriever({ app, model })
+    const installedPlugins = installedPluginsRetriever({ app, model, reporter, req }) || []
     const { npmNames } = req.vars
+    const hostVersion = hostVersionRetriever({ app, cache, model, reporter, req })
 
     let registryData // this functions as a cache, filled as needed
     const alreadyInstalled = []
@@ -64,6 +75,8 @@ const addPluginsHandler = ({ hostVersion, installedPluginsRetriever, pluginPkgDi
 
         const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
 
+        console.log('hostVersion:', hostVersion, 'pluginType:', pluginType, 'plugins:', plugins) // DEBUG
+
         if (!plugins.some(({ npmName }) => npmName === testName)) {
           throw createError.NotFound(`No such plugin package '${testName}' found in the registries.`)
         }
@@ -87,12 +100,27 @@ const addPluginsHandler = ({ hostVersion, installedPluginsRetriever, pluginPkgDi
         ? (anyInstalled ? '; <code>' : '')
             + alreadyInstalled.join('<rst>, <code>') + '<rst> packages already installed'
         : '')
-      + '.'
+
+    const pluginPkgDir = pluginPkgDirRetriever({ app, model, reporter, req })
+    console.log('pluginPkgDir:', pluginPkgDir) // DEBUG
+    const pluginPkg = fsPath.join(pluginPkgDir, 'package.json')
+    if (!fs.existsSync(pluginPkg)) {
+      fs.mkdirSync(pluginPkgDir, { recursive: true })
+      fs.writeFileSync(pluginPkg, '{}')
+    }
 
     if (anyInstalled === true) {
       tryExec(`cd "${pluginPkgDir}" && npm install ${prodInstalls.join(' ')} ${devInstalls.join(' ')}`)
-      await app.reload({ app, model, reporter, ...app.liq.config })
-      msg += ' Server endpoints reloaded.'
+      if (reloadFunc !== undefined) {
+        const reload = reloadFunc({ app, cache, model, reporter, req })
+        if (reload.then) {
+          await reload
+        }
+      }
+      msg += `; ${pluginsDesc} plugins reloaded.`
+    }
+    else {
+      msg += '.'
     }
 
     httpSmartResponse({ msg, req, res })

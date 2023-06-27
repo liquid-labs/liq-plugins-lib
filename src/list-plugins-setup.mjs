@@ -62,7 +62,7 @@ const generateRowText = ({
   return row
 }
 
-const mdFormatter = ({ data, title }) => `# ${title}\n\n`
+const mdFormatter = ({ data = [], title }) => `# ${title}\n\n`
   + data.map((p) => generateRowText({
     homepageClose  : '_',
     homepageOpen   : '_',
@@ -76,8 +76,8 @@ const mdFormatter = ({ data, title }) => `# ${title}\n\n`
   })).join('\n')
   // `- **${p.name}** (${ p.installed !== undefined ? 'installed' + (p.handlerCount !== undefined ? '; ' : '') : ''} ${p.handlerCount} handlers): ${p.summary}`).join('\n') + '\n'
 
-const terminalFormatter = ({ data }) =>
-  data.map((p) => generateRowText({
+const terminalFormatter = ({ data = [] }) => {
+  return data.map((p) => generateRowText({
     homepageClose  : '<rst>',
     homepageOpen   : '<code>',
     installedClose : '<rst>',
@@ -88,30 +88,30 @@ const terminalFormatter = ({ data }) =>
     providerClose  : '<rst>',
     providerOpen   : '<bold>'
   })).join('\n')
+}
 // `- <em>${p.name}<rst> (${p.handlerCount} handlers): ${p.summary}`).join('\n') + '\n'
 
-const textFormatter = ({ data }) =>
+const textFormatter = ({ data = [] }) =>
   data.map((p) => generateRowText({ p })).join('\n')
 // `- ${p.name} (${p.handlerCount} handlers): ${p.summary}`).join('\n') + '\n'
 
 const listPluginsHandler = ({ hostVersionRetriever, installedPluginsRetriever, pluginType }) =>
   ({ app, cache, model, reporter }) => async(req, res) => {
     const hostVersion = hostVersionRetriever({ app, model })
-    const installedPlugins = installedPluginsRetriever({ app, model })
+    const installedPlugins = installedPluginsRetriever({ app, model, req }) || []
 
     const { available, update } = req.vars
 
     const defaultFields = available === true
-      ? ['name', 'summary', 'handlerCount']
-      : ['name', 'installed', 'summary', 'provider', 'homepage']
+      ? ['name', 'summary', 'provider', 'homepage']
+      : ['name', 'handlerCount', 'installed', 'summary', 'provider', 'homepage']
 
     const data = available === true
       ? await getAvailablePlugins({ app, cache, hostVersion, installedPlugins, pluginType, update })
       : installedPlugins
-        .map((p) => ({ name : p.name, summary : p.summary, handlerCount : p.handlersInfo.length, installed : true }))
+        .map((p) => ({ name : p.name, summary : p.summary, installed : true }))
         .sort((a, b) =>
-          a.name.localeCompare(b.name) // 1 and -1 are true-ish, only zero then fallsback to the secondary sort
-          || (a.handlerCount > b.handlerCount ? -1 : (a.handlerCount < b.handlerCount ? 1 : 0)))
+          a.name.localeCompare(b.name)) // 1 and -1 are true-ish, only zero then fallsback to the secondary sort
 
     formatOutput({
       basicTitle : 'Plugins Report',
