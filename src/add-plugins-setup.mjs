@@ -75,8 +75,6 @@ const addPluginsHandler = ({
 
         const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
 
-        console.log('hostVersion:', hostVersion, 'pluginType:', pluginType, 'plugins:', plugins) // DEBUG
-
         if (!plugins.some(({ npmName }) => npmName === testName)) {
           throw createError.NotFound(`No such plugin package '${testName}' found in the registries.`)
         }
