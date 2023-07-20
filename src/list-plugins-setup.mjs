@@ -7,7 +7,7 @@ const allFields = ['name', 'npmName', 'installed', 'summary', 'handlerCount', 'p
 
 const listPluginsSetup = ({ pluginsDesc }) => {
   const help = {
-    name        : `${pluginsDesc} lugins list`,
+    name        : `${pluginsDesc} plugins list`,
     summary     : `Lists the installed ${pluginsDesc} plugins.`,
     description : `Lists the installed ${pluginsDesc} plugins.`
   }

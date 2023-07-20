@@ -100,7 +100,6 @@ const addPluginsHandler = ({
         : '')
 
     const pluginPkgDir = pluginPkgDirRetriever({ app, model, reporter, req })
-    console.log('pluginPkgDir:', pluginPkgDir) // DEBUG
     const pluginPkg = fsPath.join(pluginPkgDir, 'package.json')
     if (!fs.existsSync(pluginPkg)) {
       fs.mkdirSync(pluginPkgDir, { recursive : true })

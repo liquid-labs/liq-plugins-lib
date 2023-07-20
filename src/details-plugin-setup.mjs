@@ -18,7 +18,6 @@ const detailsPluginSetup = ({ pluginsDesc }) => {
 const detailsPluginHandler = ({ installedPluginsRetriever, nameKey }) =>
   ({ app, cache, model, reporter }) => async(req, res) => {
     const installedPlugins = installedPluginsRetriever({ app, model, req })
-    console.log('installedPlugins:', installedPlugins) // DEBUG
     const pluginName = req.vars[nameKey]
 
     const pluginData = installedPlugins.find(({ name }) => pluginName === name)
