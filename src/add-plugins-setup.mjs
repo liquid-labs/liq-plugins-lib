@@ -24,7 +24,7 @@ const addPluginsSetup = ({ hostVersionRetriever, pluginsDesc, pluginType }) => {
       description  : 'The plugins to install, by their NPM package name. Include multiple times to install multiple plugins.',
       optionsFunc  : async({ app, model, cache }) => {
         const hostVersion = hostVersionRetriever({ app, model })
-        const registryData = await determineRegistryData({ cache, registries : app.liq.serverSettings.registries })
+        const registryData = await determineRegistryData({ cache, registries : app.ext.serverSettings.registries })
         const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
         return plugins.map(({ npmName }) => npmName)
       }
@@ -71,7 +71,7 @@ const addPluginsHandler = ({
 
       if (matched === false) {
         registryData = registryData
-          || await determineRegistryData({ cache, registries : app.liq.serverSettings.registries })
+          || await determineRegistryData({ cache, registries : app.ext.serverSettings.registries })
 
         const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
 
