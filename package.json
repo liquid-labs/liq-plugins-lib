@@ -9,6 +9,7 @@
     "lint:fix": "make lint-fix",
     "test": "make test",
     "preversion": "make test && make lint",
+    "prepack": "make build",
     "qa": "make qa"
   },
   "keywords": [],
