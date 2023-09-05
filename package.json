@@ -29,7 +29,7 @@
     "semver": "^7.5.3"
   },
   "devDependencies": {
-    "@liquid-labs/catalyst-scripts-node-project": "^1.0.0-alpha.18",
+    "@liquid-labs/catalyst-scripts-node-project": "^1.0.0-alpha.22",
     "@liquid-labs/weak-cache": "^1.0.0-alpha.1"
   }
 }
