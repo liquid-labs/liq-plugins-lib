@@ -1,3 +1,5 @@
+import createError from 'http-errors'
+
 import { commonOutputParams, formatOutput } from '@liquid-labs/liq-handlers-lib'
 
 import { determineRegistryData } from './lib/determine-registry-data'
@@ -14,9 +16,9 @@ const listPluginsSetup = ({ pluginsDesc }) => {
   const method = 'get'
 
   const parameters = [
-    // TODO: 'available' doesn't make sense if server is instantiated with 'noRegistries', but parameters are currently 
-    // statically loaded without visibility into the app configurations so we have no way of dynamically configuring 
-    // parameters. It makes sense to add a 'setupHandler' which is exported, and then that returns the handler func, 
+    // TODO: 'available' doesn't make sense if server is instantiated with 'noRegistries', but parameters are currently
+    // statically loaded without visibility into the app configurations so we have no way of dynamically configuring
+    // parameters. It makes sense to add a 'setupHandler' which is exported, and then that returns the handler func,
     // parameters, etc. It's a breaking change, but probably one that should happen.
     {
       name        : 'available',
@@ -111,7 +113,7 @@ const listPluginsHandler = ({ hostVersionRetriever, installedPluginsRetriever, p
       : ['name', 'handlerCount', 'installed', 'summary', 'provider', 'homepage']
 
     const data = available === true
-      ? (app.ext.noRegistries === true 
+      ? (app.ext.noRegistries === true
         ? throw createError.BadRequest("This server does not use registries; the 'available' parameter cannot be used.")
         : await getAvailablePlugins({ app, cache, hostVersion, installedPlugins, pluginType, update }))
       : installedPlugins
