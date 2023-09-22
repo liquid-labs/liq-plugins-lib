@@ -23,6 +23,9 @@ const addPluginsSetup = ({ hostVersionRetriever, pluginsDesc, pluginType }) => {
       isMultivalue : true,
       description  : 'The plugins to install, by their NPM package name. Include multiple times to install multiple plugins.',
       optionsFunc  : async({ app, model, cache }) => {
+        if (app.ext.noRegistries === true) {
+          return []
+        }
         const hostVersion = hostVersionRetriever({ app, model })
         const registryData = await determineRegistryData({ cache, registries : app.ext.serverSettings.registries })
         const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
