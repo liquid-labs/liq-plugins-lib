@@ -33,7 +33,7 @@ const removePluginsHandler = ({ installedPluginsRetriever, nameKey, pluginPkgDir
     tryExec(`cd "${(pluginPkgDir)}" && npm uninstall ${npmName}`)
 
     if (reloadFunc !== undefined) {
-      const reload = reloadFunc({ app, cache, model, reporter, req })
+      const reload = reloadFunc({ app })
       if (reload.then) {
         await reload
       }
