@@ -63,13 +63,11 @@ const addPluginsHandler = ({
         continue
       }
 
-      // is it a development package? Notice, we don't check our registry because these might not be registered
-      for (const projectSpec of model.playground.projects.list({ rawData : true })) {
-        if (testName === projectSpec.packageJSON?.name) {
-          devInstalls.push('file:' + projectSpec.localProjectPath)
-          matched = true
-          break
-        }
+      // is it a development package?
+      const pluginPkgPath = app.ext.findPackage({ npmName : testName })
+      if (pluginPkgPath !== null) {
+        devInstalls.push('file:' + fsPath.dirname(pluginPkgPath))
+        matched = true
       }
 
       if (matched === false) {
@@ -112,7 +110,7 @@ const addPluginsHandler = ({
     if (anyInstalled === true) {
       tryExec(`cd "${pluginPkgDir}" && npm install ${prodInstalls.join(' ')} ${devInstalls.join(' ')}`)
       if (reloadFunc !== undefined) {
-        const reload = reloadFunc({ app, cache, model, reporter, req })
+        const reload = reloadFunc({ app })
         if (reload.then) {
           await reload
         }
