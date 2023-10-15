@@ -32,12 +32,14 @@ const listPluginsSetup = ({ pluginsDesc }) => {
     },
     ...commonOutputParams() // option func setup on 'fields' below
   ]
-  parameters.find((o) => o.name === 'fields').optionsFunc = () => allFields
+  parameters.find((o) => o.name === 'fields').optionsFetcher = () => allFields
 
   return { help, method, parameters }
 }
 
 const generateRowText = ({
+  codeClose,
+  codeOpen,
   homepageClose = '',
   homepageOpen = '',
   installedClose = '',
@@ -61,7 +63,8 @@ const generateRowText = ({
   }
   if (p.npmName !== undefined || p.homepage !== undefined) {
     row += '\n  '
-    row += p.npmName !== undefined ? 'NPM: ' + p.npmName + (p.homepage !== undefined ? ' ' : '') : ''
+    row += p.npmName !== undefined ? `NPM: ${codeOpen}${p.npmName}${codeClose}` 
+      + (p.homepage !== undefined ? ' ' : '') : ''
     row += p.homepage !== undefined ? `homepage: ${homepageOpen}${p.homepage}${homepageClose}` : ''
   }
 
@@ -70,6 +73,8 @@ const generateRowText = ({
 
 const mdFormatter = ({ data = [], title }) => `# ${title}\n\n`
   + data.map((p) => generateRowText({
+    codeClose: '`',
+    codeOpen: '`',
     homepageClose  : '_',
     homepageOpen   : '_',
     installedClose : '__',
@@ -84,6 +89,8 @@ const mdFormatter = ({ data = [], title }) => `# ${title}\n\n`
 
 const terminalFormatter = ({ data = [] }) => {
   return data.map((p) => generateRowText({
+    codeClose: '<rst>',
+    codeOpen: '<code>',
     homepageClose  : '<rst>',
     homepageOpen   : '<code>',
     installedClose : '<rst>',
@@ -111,16 +118,16 @@ const listPluginsHandler = ({ hostVersionRetriever, installedPluginsRetriever, p
     const defaultFields = available === true
       ? ['name', 'summary', 'provider', 'homepage']
       : ['name', 'handlerCount', 'installed', 'summary', 'provider', 'homepage']
-
+console.log('installedPlugins:', installedPlugins) // DEBUG
     const data = available === true
       ? (app.ext.noRegistries === true
         ? throw createError.BadRequest("This server does not use registries; the 'available' parameter cannot be used.")
         : await getAvailablePlugins({ app, cache, hostVersion, installedPlugins, pluginType, update }))
       : installedPlugins
-        .map((p) => ({ name : p.name, summary : p.summary, installed : true }))
+        .map((p) => ({ ...p, installed : true }))
         .sort((a, b) =>
           a.name.localeCompare(b.name)) // 1 and -1 are true-ish, only zero then fallsback to the secondary sort
-
+console.log(data) // DEBUG
     formatOutput({
       basicTitle : 'Plugins Report',
       data,
