@@ -120,7 +120,6 @@ const listPluginsHandler = ({ hostVersionRetriever, installedPluginsRetriever, p
     const defaultFields = available === true
       ? ['name', 'summary', 'provider', 'homepage']
       : ['name', 'handlerCount', 'installed', 'summary', 'provider', 'homepage']
-    console.log('installedPlugins:', installedPlugins) // DEBUG
     const data = available === true
       ? (app.ext.noRegistries === true
         ? throw createError.BadRequest("This server does not use registries; the 'available' parameter cannot be used.")
