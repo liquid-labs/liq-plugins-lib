@@ -129,7 +129,6 @@ const listPluginsHandler = ({ hostVersionRetriever, installedPluginsRetriever, p
         .map((p) => ({ ...p, installed : true }))
         .sort((a, b) =>
           a.name.localeCompare(b.name)) // 1 and -1 are true-ish, only zero then fallsback to the secondary sort
-    console.log(data) // DEBUG
     formatOutput({
       basicTitle : 'Plugins Report',
       data,
