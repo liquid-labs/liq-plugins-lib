@@ -63,8 +63,10 @@ const generateRowText = ({
   }
   if (p.npmName !== undefined || p.homepage !== undefined) {
     row += '\n  '
-    row += p.npmName !== undefined ? `NPM: ${codeOpen}${p.npmName}${codeClose}` 
-      + (p.homepage !== undefined ? ' ' : '') : ''
+    row += p.npmName !== undefined
+      ? `NPM: ${codeOpen}${p.npmName}${codeClose}`
+      + (p.homepage !== undefined ? ' ' : '')
+      : ''
     row += p.homepage !== undefined ? `homepage: ${homepageOpen}${p.homepage}${homepageClose}` : ''
   }
 
@@ -73,8 +75,8 @@ const generateRowText = ({
 
 const mdFormatter = ({ data = [], title }) => `# ${title}\n\n`
   + data.map((p) => generateRowText({
-    codeClose: '`',
-    codeOpen: '`',
+    codeClose      : '`',
+    codeOpen       : '`',
     homepageClose  : '_',
     homepageOpen   : '_',
     installedClose : '__',
@@ -89,8 +91,8 @@ const mdFormatter = ({ data = [], title }) => `# ${title}\n\n`
 
 const terminalFormatter = ({ data = [] }) => {
   return data.map((p) => generateRowText({
-    codeClose: '<rst>',
-    codeOpen: '<code>',
+    codeClose      : '<rst>',
+    codeOpen       : '<code>',
     homepageClose  : '<rst>',
     homepageOpen   : '<code>',
     installedClose : '<rst>',
@@ -118,7 +120,7 @@ const listPluginsHandler = ({ hostVersionRetriever, installedPluginsRetriever, p
     const defaultFields = available === true
       ? ['name', 'summary', 'provider', 'homepage']
       : ['name', 'handlerCount', 'installed', 'summary', 'provider', 'homepage']
-console.log('installedPlugins:', installedPlugins) // DEBUG
+    console.log('installedPlugins:', installedPlugins) // DEBUG
     const data = available === true
       ? (app.ext.noRegistries === true
         ? throw createError.BadRequest("This server does not use registries; the 'available' parameter cannot be used.")
@@ -127,7 +129,7 @@ console.log('installedPlugins:', installedPlugins) // DEBUG
         .map((p) => ({ ...p, installed : true }))
         .sort((a, b) =>
           a.name.localeCompare(b.name)) // 1 and -1 are true-ish, only zero then fallsback to the secondary sort
-console.log(data) // DEBUG
+    console.log(data) // DEBUG
     formatOutput({
       basicTitle : 'Plugins Report',
       data,
