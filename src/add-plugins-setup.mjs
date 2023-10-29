@@ -64,9 +64,9 @@ const addPluginsHandler = ({
       }
 
       // is it a development package?
-      const pluginPkgPath = app.ext.findPackage({ npmName : testName })
-      if (pluginPkgPath !== null) {
-        devInstalls.push('file:' + fsPath.dirname(pluginPkgPath))
+      const { projectPath } = app.ext._liqProjects?.playgroundMonitor?.getProjectData(testName) || {}
+      if (projectPath !== undefined) {
+        devInstalls.push('file:' + projectPath)
         matched = true
       }
 
