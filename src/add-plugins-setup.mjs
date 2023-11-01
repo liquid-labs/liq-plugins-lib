@@ -40,27 +40,27 @@ const addPluginsHandler = ({
   pluginType,
   reloadFunc
 }) =>
-({ app, cache, model, reporter }) => async(req, res) => {
-  const installedPlugins = installedPluginsRetriever({ app, model, reporter, req }) || []
-  const { npmNames } = req.vars
-  const hostVersion = hostVersionRetriever({ app, cache, model, reporter, req })
-  const pluginPkgDir = pluginPkgDirRetriever({ app, reporter, req })
+  ({ app, cache, model, reporter }) => async(req, res) => {
+    const installedPlugins = installedPluginsRetriever({ app, model, reporter, req }) || []
+    const { npmNames } = req.vars
+    const hostVersion = hostVersionRetriever({ app, cache, model, reporter, req })
+    const pluginPkgDir = pluginPkgDirRetriever({ app, reporter, req })
 
-  const msg = await installPlugins({ 
-    app,
-    cache, 
-    hostVersion, 
-    installedPlugins, 
-    npmNames, 
-    pluginPkgDir, 
-    pluginType, 
-    reloadFunc, 
-    reporter, 
-    req, 
-    res
-  })
+    const msg = await installPlugins({
+      app,
+      cache,
+      hostVersion,
+      installedPlugins,
+      npmNames,
+      pluginPkgDir,
+      pluginType,
+      reloadFunc,
+      reporter,
+      req,
+      res
+    })
 
-  httpSmartResponse({ msg, req, res })
-}
+    httpSmartResponse({ msg, req, res })
+  }
 
 export { addPluginsHandler, addPluginsSetup }

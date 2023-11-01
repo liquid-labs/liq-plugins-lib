@@ -8,25 +8,25 @@ import { tryExec } from '@liquid-labs/shell-toolkit'
 import { determineRegistryData } from './determine-registry-data'
 import { selectMatchingPlugins } from './select-matching-plugins'
 
-const installPlugins = async({ 
-  app, 
-  cache, 
-  hostVersion, 
-  installedPlugins, 
-  npmNames, 
-  pluginPkgDir, 
-  pluginType, 
-  reloadFunc, 
-  reporter, 
-  req, 
-  res 
+const installPlugins = async({
+  app,
+  cache,
+  hostVersion,
+  installedPlugins,
+  npmNames,
+  pluginPkgDir,
+  pluginType,
+  reloadFunc,
+  reporter,
+  req,
+  res
 }) => {
   let registryData // this functions as a cache, filled as needed
   const alreadyInstalled = []
   const devInstalls = []
   const prodInstalls = []
   for (const testPackage of npmNames) {
-    // the 'npmNames' can be unqualified or can contain a version qualifier at the end, in which case we want to 
+    // the 'npmNames' can be unqualified or can contain a version qualifier at the end, in which case we want to
     // separate out the plain name part
     const testName = testPackage.replace(/(.)@.*/, '$1')
 
