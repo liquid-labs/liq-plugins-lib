@@ -5,7 +5,7 @@ import { commonOutputParams, formatOutput } from '@liquid-labs/liq-handlers-lib'
 import { determineRegistryData } from './lib/determine-registry-data'
 import { selectMatchingPlugins } from './lib/select-matching-plugins'
 
-const allFields = ['name', 'npmName', 'installed', 'summary', 'handlerCount', 'provider', 'homepage']
+const allFields = ['name', 'npmName', 'installed', 'summary', 'handlerCount', 'provider', 'homepage', 'version']
 
 const listPluginsSetup = ({ pluginsDesc }) => {
   const help = {
@@ -118,8 +118,8 @@ const listPluginsHandler = ({ hostVersionRetriever, installedPluginsRetriever, p
     const { available, update } = req.vars
 
     const defaultFields = available === true
-      ? ['name', 'summary', 'provider', 'homepage']
-      : ['name', 'handlerCount', 'installed', 'summary', 'provider', 'homepage']
+      ? ['name', 'summary', 'npmName', 'homepage']
+      : ['name', 'handlerCount', 'installed', 'summary', 'npmName', 'homepage']
     const data = available === true
       ? (app.ext.noRegistries === true
         ? throw createError.BadRequest("This server does not use registries; the 'available' parameter cannot be used.")

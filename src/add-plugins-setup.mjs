@@ -1,19 +1,15 @@
-import * as fs from 'node:fs'
-import * as fsPath from 'node:path'
-
-import createError from 'http-errors'
-
 import { httpSmartResponse } from '@liquid-labs/http-smart-response'
-import { tryExec } from '@liquid-labs/shell-toolkit'
 
 import { determineRegistryData } from './lib/determine-registry-data'
 import { selectMatchingPlugins } from './lib/select-matching-plugins'
 
-const addPluginsSetup = ({ hostVersionRetriever, pluginsDesc, pluginType }) => {
+import { installPlugins } from './lib/install-plugins'
+
+const addPluginsSetup = ({ hostVersionRetriever, pluginType }) => {
   const help = {
-    name        : `add ${pluginsDesc} plugins`,
-    summary     : `Installs one or more ${pluginsDesc} plugins.`,
-    description : `Installs one or more ${pluginsDesc} plugins.`
+    name        : `add ${pluginType} plugins`,
+    summary     : `Installs one or more ${pluginType} plugins.`,
+    description : `Installs one or more ${pluginType} plugins.`
   }
   const method = 'put'
 
@@ -41,7 +37,6 @@ const addPluginsHandler = ({
   hostVersionRetriever,
   installedPluginsRetriever,
   pluginPkgDirRetriever,
-  pluginsDesc,
   pluginType,
   reloadFunc
 }) =>
@@ -49,77 +44,21 @@ const addPluginsHandler = ({
     const installedPlugins = installedPluginsRetriever({ app, model, reporter, req }) || []
     const { npmNames } = req.vars
     const hostVersion = hostVersionRetriever({ app, cache, model, reporter, req })
+    const pluginPkgDir = pluginPkgDirRetriever({ app, reporter, req })
 
-    let registryData // this functions as a cache, filled as needed
-    const alreadyInstalled = []
-    const devInstalls = []
-    const prodInstalls = []
-    for (const testName of npmNames) {
-      let matched = installedPlugins.some(({ npmName }) => {
-        return npmName === testName
-      })
-      if (matched === true) {
-        alreadyInstalled.push(testName)
-        continue
-      }
-
-      // is it a development package?
-      const { projectPath } = app.ext._liqProjects?.playgroundMonitor?.getProjectData(testName) || {}
-      if (projectPath !== undefined) {
-        devInstalls.push('file:' + projectPath)
-        matched = true
-      }
-
-      if (matched === false) {
-        registryData = registryData
-          || await determineRegistryData({ cache, registries : app.ext.serverSettings.registries })
-
-        const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
-
-        if (!plugins.some(({ npmName }) => npmName === testName)) {
-          throw createError.NotFound(`No such plugin package '${testName}' found in the registries.`)
-        }
-        prodInstalls.push(testName)
-      }
-    }
-
-    const prodInstalled = prodInstalls.length > 0
-    const devInstalled = devInstalls.length > 0
-    const anyInstalled = prodInstalled || devInstalled
-
-    let msg =
-      (anyInstalled
-        ? '<em>Installed<rst> <code>'
-          + ((devInstalled
-            ? devInstalls.join('<rst>, <code>') + '<rst> development packages'
-            : (prodInstalled ? ' and <code>' : '')))
-            + (prodInstalled ? prodInstalls.join('<rst>, <code>') + '<rst> production packages' : '')
-        : 'Nothing installed')
-      + (alreadyInstalled.length > 0
-        ? (anyInstalled ? '; <code>' : '')
-            + alreadyInstalled.join('<rst>, <code>') + '<rst> packages already installed'
-        : '')
-
-    const pluginPkgDir = pluginPkgDirRetriever({ app, model, reporter, req })
-    const pluginPkg = fsPath.join(pluginPkgDir, 'package.json')
-    if (!fs.existsSync(pluginPkg)) {
-      fs.mkdirSync(pluginPkgDir, { recursive : true })
-      fs.writeFileSync(pluginPkg, '{}')
-    }
-
-    if (anyInstalled === true) {
-      tryExec(`cd "${pluginPkgDir}" && npm install ${prodInstalls.join(' ')} ${devInstalls.join(' ')}`)
-      if (reloadFunc !== undefined) {
-        const reload = reloadFunc({ app })
-        if (reload.then) {
-          await reload
-        }
-      }
-      msg += `; ${pluginsDesc} plugins reloaded.`
-    }
-    else {
-      msg += '.'
-    }
+    const msg = await installPlugins({
+      app,
+      cache,
+      hostVersion,
+      installedPlugins,
+      npmNames,
+      pluginPkgDir,
+      pluginType,
+      reloadFunc,
+      reporter,
+      req,
+      res
+    })
 
     httpSmartResponse({ msg, req, res })
   }
