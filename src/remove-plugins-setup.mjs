@@ -18,18 +18,18 @@ const removePluginsSetup = ({ pluginsDesc }) => {
 }
 
 const removePluginsHandler = ({ installedPluginsRetriever, nameKey, pluginPkgDirRetriever, reloadFunc }) =>
-  ({ app, cache, model, reporter }) => async(req, res) => {
-    const installedPlugins = installedPluginsRetriever({ app, model, req })
+  ({ app, reporter }) => async(req, res) => {
+    const installedPlugins = installedPluginsRetriever({ app, req })
     const pluginName = req.vars[nameKey]
 
-    const pluginData = installedPlugins.find(({ name }) => pluginName === name)
+    const pluginData = installedPlugins.find(({ npmName }) => pluginName === npmName)
     if (!pluginData) {
       throw createError.NotFound(`No such plugin '${pluginName}' found.`)
     }
     // else
 
     const npmName = pluginData.npmName
-    const pluginPkgDir = pluginPkgDirRetriever({ app, model, reporter, req })
+    const pluginPkgDir = pluginPkgDirRetriever({ app, reporter, req })
     tryExec(`cd "${(pluginPkgDir)}" && npm uninstall ${npmName}`)
 
     if (reloadFunc !== undefined) {

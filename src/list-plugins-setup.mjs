@@ -5,7 +5,7 @@ import { commonOutputParams, formatOutput } from '@liquid-labs/liq-handlers-lib'
 import { determineRegistryData } from './lib/determine-registry-data'
 import { selectMatchingPlugins } from './lib/select-matching-plugins'
 
-const allFields = ['name', 'npmName', 'installed', 'summary', 'handlerCount', 'provider', 'homepage', 'version']
+const allFields = ['npmName', 'installed', 'summary', 'handlerCount', 'provider', 'homepage', 'version']
 
 const listPluginsSetup = ({ pluginsDesc }) => {
   const help = {
@@ -50,24 +50,18 @@ const generateRowText = ({
   providerClose = '',
   providerOpen = ''
 }) => {
-  let row = `- ${nameOpen}${p.name}${nameClose}`
+  let row = `- ${nameOpen}${p.npmName}${nameClose}`
   if (p.provider !== undefined) {
     row += ` from ${providerOpen}${p.provider}${providerClose}`
   }
   if (p.installed !== undefined || p.handlerCount !== undefined) {
     row += ` (${p.installed !== undefined ? `${installedOpen}installed${installedClose}` + (p.handlerCount !== undefined ? '; ' : '') : ''}${p.handlerCount !== undefined ? `${p.handlerCount} handlers` : ''})`
   }
-  if (p.summary) {
-    row += ': '
-    row += p.summary !== undefined ? p.summary : ''
+  if (p.summary !== undefined && p.summary.length > 0) {
+    row += ': ' + p.summary
   }
-  if (p.npmName !== undefined || p.homepage !== undefined) {
-    row += '\n  '
-    row += p.npmName !== undefined
-      ? `NPM: ${codeOpen}${p.npmName}${codeClose}`
-      + (p.homepage !== undefined ? ' ' : '')
-      : ''
-    row += p.homepage !== undefined ? `homepage: ${homepageOpen}${p.homepage}${homepageClose}` : ''
+  if (p.homepage !== undefined) {
+    row += `\n  homepage: ${homepageOpen}${p.homepage}${homepageClose}`
   }
 
   return row
@@ -118,8 +112,8 @@ const listPluginsHandler = ({ hostVersionRetriever, installedPluginsRetriever, p
     const { available, update } = req.vars
 
     const defaultFields = available === true
-      ? ['name', 'summary', 'npmName', 'homepage']
-      : ['name', 'handlerCount', 'installed', 'summary', 'npmName', 'homepage']
+      ? ['npmName', 'summary', 'homepage']
+      : ['npmName', 'handlerCount', 'installed', 'summary', 'homepage']
     const data = available === true
       ? (app.ext.noRegistries === true
         ? throw createError.BadRequest("This server does not use registries; the 'available' parameter cannot be used.")
@@ -127,7 +121,7 @@ const listPluginsHandler = ({ hostVersionRetriever, installedPluginsRetriever, p
       : installedPlugins
         .map((p) => ({ ...p, installed : true }))
         .sort((a, b) =>
-          a.name.localeCompare(b.name)) // 1 and -1 are true-ish, only zero then fallsback to the secondary sort
+          a.npmName.localeCompare(b.npmName)) // 1 and -1 are true-ish, only zero then fallsback to the secondary sort
     formatOutput({
       basicTitle : 'Plugins Report',
       data,

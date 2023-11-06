@@ -16,11 +16,11 @@ const detailsPluginSetup = ({ pluginsDesc }) => {
 }
 
 const detailsPluginHandler = ({ installedPluginsRetriever, nameKey }) =>
-  ({ app, cache, model, reporter }) => async(req, res) => {
-    const installedPlugins = installedPluginsRetriever({ app, model, req })
+  ({ app, reporter }) => async(req, res) => {
+    const installedPlugins = installedPluginsRetriever({ app, req })
     const pluginName = req.vars[nameKey]
 
-    const pluginData = installedPlugins.find(({ name }) => pluginName === name)
+    const pluginData = installedPlugins.find(({ npmName }) => pluginName === npmName)
     if (!pluginData) {
       throw createError.NotFound(`No such plugin '${pluginName}' found.`)
     }

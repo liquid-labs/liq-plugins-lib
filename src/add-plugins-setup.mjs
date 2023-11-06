@@ -18,11 +18,11 @@ const addPluginsSetup = ({ hostVersionRetriever, pluginType }) => {
       name         : 'npmNames',
       isMultivalue : true,
       description  : 'The plugins to install, by their NPM package name. Include multiple times to install multiple plugins.',
-      optionsFunc  : async({ app, model, cache }) => {
+      optionsFunc  : async({ app, cache }) => {
         if (app.ext.noRegistries === true) {
           return []
         }
-        const hostVersion = hostVersionRetriever({ app, model })
+        const hostVersion = hostVersionRetriever({ app })
         const registryData = await determineRegistryData({ cache, registries : app.ext.serverSettings.registries })
         const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
         return plugins.map(({ npmName }) => npmName)
@@ -40,10 +40,10 @@ const addPluginsHandler = ({
   pluginType,
   reloadFunc
 }) =>
-  ({ app, cache, model, reporter }) => async(req, res) => {
-    const installedPlugins = installedPluginsRetriever({ app, model, reporter, req }) || []
+  ({ app, cache, reporter }) => async(req, res) => {
+    const installedPlugins = installedPluginsRetriever({ app, reporter, req }) || []
     const { npmNames } = req.vars
-    const hostVersion = hostVersionRetriever({ app, cache, model, reporter, req })
+    const hostVersion = hostVersionRetriever({ app, reporter, req })
     const pluginPkgDir = pluginPkgDirRetriever({ app, reporter, req })
 
     const msg = await installPlugins({
