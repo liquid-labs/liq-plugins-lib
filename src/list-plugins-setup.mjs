@@ -137,8 +137,9 @@ const listPluginsHandler = ({ hostVersionRetriever, installedPluginsRetriever, p
     })
   }
 
-const getAvailablePlugins = async({ app, cache, hostVersion, installedPlugins, pluginType, update }) => {
-  const registryData = await determineRegistryData({ cache, registries : app.ext.serverSettings.registries, update })
+const getAvailablePlugins = async({ app, cache, hostVersion, installedPlugins, pluginType, reporter, update }) => {
+  const registryData =
+    await determineRegistryData({ cache, registries : app.ext.serverSettings.registries, reporter, update })
 
   return selectMatchingPlugins({ hostVersion, installedPlugins, pluginType, registryData })
 }
