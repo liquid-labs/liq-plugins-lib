@@ -1,3 +1,5 @@
+import * as fs from 'node:fs/promises'
+
 import createError from 'http-errors'
 import yaml from 'js-yaml'
 
@@ -10,23 +12,28 @@ const determineRegistryData = async({ cache, registries = [], update }) => {
     const data = {}
     for (const { url: registryURL } of registries) {
       let text
-      try {
-        const response = await fetch('https://' + registryURL)
-        text = await response.text()
+      if (registryURL.startsWith('file:')) {
+        text = await fs.readFile(registryURL.slice(5))
       }
-      catch (e) {
-        throw createError.InternalServerError('Could not load registry data.', { cause : e })
+      else {
+        try {
+          const response = await fetch(registryURL)
+          text = await response.text()
+        }
+        catch (e) {
+          throw createError.InternalServerError(`Could not load registry data from ${registryURL}: ${e.message}`, { cause : e })
+        }
       }
       let json
       try {
         json = registryURL.endsWith('.yaml') ? yaml.load(text) : JSON.parse(text)
       }
       catch (e) {
-        throw createError.BadRequest(`Registry at https://${registryURL} does not parse as ${registryURL.endsWith('.yaml') ? 'YAML' : 'JSON'}.`, { cause : e })
+        throw createError.BadRequest(`Registry ${registryURL} does not parse as ${registryURL.endsWith('.yaml') ? 'YAML' : 'JSON'}.`, { cause : e })
       }
       const id = json?.meta?.id // TODO: verify using ajv
       if (id === undefined) {
-        throw createError.BadRequest(`Registry at https://${registryURL} does not define 'meta.id'.`)
+        throw createError.BadRequest(`Registry ${registryURL} does not define 'meta.id'.`)
       }
       data[json.meta.id] = json
     }
