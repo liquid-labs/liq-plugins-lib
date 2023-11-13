@@ -47,7 +47,7 @@ const installPlugins = async({
 
     if (matched === false) {
       registryData = registryData
-        || await determineRegistryData({ cache, registries : app.ext.serverSettings.registries })
+        || await determineRegistryData({ cache, registries : app.ext.serverSettings.registries, reporter })
 
       const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
 

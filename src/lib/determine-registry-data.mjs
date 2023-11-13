@@ -5,12 +5,15 @@ import yaml from 'js-yaml'
 
 const REGISTRY_DATA_KEY = 'liquid-labs/liq-core:registry-data'
 
-const determineRegistryData = async({ cache, registries = [], update }) => {
+const determineRegistryData = async({ cache, registries = [], reporter, update }) => {
   const cachedData = cache.get(REGISTRY_DATA_KEY)
 
   if (cachedData === undefined || update === true) {
+    reporter?.log(`Loading data from ${registries.length} registries...`)
     const data = {}
     for (const { url: registryURL } of registries) {
+      reporter?.log(`Loading data from registry: ${registryURL}`)
+
       let text
       if (registryURL.startsWith('file:')) {
         text = await fs.readFile(registryURL.slice(5))
@@ -43,6 +46,7 @@ const determineRegistryData = async({ cache, registries = [], update }) => {
     return data
   }
   else {
+    reporter?.log('Loading registries data from cache...')
     return cachedData
   }
 }

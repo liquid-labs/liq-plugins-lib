@@ -5,7 +5,7 @@ import { selectMatchingPlugins } from './lib/select-matching-plugins'
 
 import { installPlugins } from './lib/install-plugins'
 
-const addPluginsSetup = ({ hostVersionRetriever, pluginType }) => {
+const addPluginsSetup = ({ hostVersionRetriever, pluginType, reporter }) => {
   const help = {
     name        : `add ${pluginType} plugins`,
     summary     : `Installs one or more ${pluginType} plugins.`,
@@ -18,12 +18,13 @@ const addPluginsSetup = ({ hostVersionRetriever, pluginType }) => {
       name         : 'npmNames',
       isMultivalue : true,
       description  : 'The plugins to install, by their NPM package name. Include multiple times to install multiple plugins.',
-      optionsFunc  : async({ app, cache }) => {
+      optionsFunc  : async({ app, cache, reporter }) => {
         if (app.ext.noRegistries === true) {
           return []
         }
         const hostVersion = hostVersionRetriever({ app })
-        const registryData = await determineRegistryData({ cache, registries : app.ext.serverSettings.registries })
+        const registryData =
+          await determineRegistryData({ cache, registries : app.ext.serverSettings.registries, reporter })
         const plugins = selectMatchingPlugins({ hostVersion, pluginType, registryData })
         return plugins.map(({ npmName }) => npmName)
       }
