@@ -1,0 +1,26 @@
+Test git rev: 25c6e983589ff203cd3a6ffe3af1cd86e099cef9
+PASS lib/test/select-matching-plugins.test.js
+PASS lib/test/determine-registry-data.test.js
+------------------------------|---------|----------|---------|---------|-------------------
+File                          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+------------------------------|---------|----------|---------|---------|-------------------
+All files                     |   20.94 |    20.54 |   14.54 |   21.29 |                   
+ src                          |       0 |        0 |       0 |       0 |                   
+  add-plugins-setup.mjs       |       0 |        0 |       0 |       0 | 1-64              
+  details-plugin-setup.mjs    |       0 |        0 |       0 |       0 | 1-30              
+  index.mjs                   |       0 |        0 |       0 |       0 | 1-5               
+  list-plugins-setup.mjs      |       0 |        0 |       0 |       0 | 1-143             
+  remove-plugins-setup.mjs    |       0 |        0 |       0 |       0 | 1-43              
+ src/lib                      |   46.22 |    32.96 |   47.05 |      46 |                   
+  determine-registry-data.mjs |   85.71 |    73.07 |     100 |   84.61 | 16,24,32,36       
+  index.mjs                   |       0 |        0 |       0 |       0 | 1-4               
+  install-plugins.mjs         |       0 |        0 |       0 |       0 | 1-98              
+  select-matching-plugins.mjs |   85.71 |    57.14 |   66.66 |    92.3 | 12                
+  select-matching-series.mjs  |     100 |      100 |     100 |     100 |                   
+------------------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 2 passed, 2 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        0.289 s, estimated 1 s
+Ran all test suites.
