@@ -13,8 +13,8 @@ const mockFetch = (results) => {
 
 describe('determineRegistryData', () => {
   let cache, origFetch
-  const jsonRegistries = [{ url : 'https://foo.com/registry.json' }]
-  const yamlRegistries = [{ url : 'https://foo.com/registry.yaml' }]
+  const jsonRegistries = ['https://foo.com/registry.json']
+  const yamlRegistries = ['https://foo.com/registry.yaml']
   const registryJSON = { meta : { id : 'abc' } }
   const results = {
     abc : registryJSON

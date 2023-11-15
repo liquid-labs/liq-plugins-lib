@@ -11,7 +11,7 @@ const determineRegistryData = async({ cache, registries = [], reporter, update }
   if (cachedData === undefined || update === true) {
     reporter?.log(`Loading data from ${registries.length} registries...`)
     const data = {}
-    for (const { url: registryURL } of registries) {
+    for (const registryURL of registries) {
       reporter?.log(`Loading data from registry: ${registryURL}`)
 
       let text
