@@ -50,6 +50,13 @@ const installPlugins = async({
       msg += '<code>' + alreadyInstalled.join('<rst>, <code>') + '<rst> <em>already installed<rst>.'
     }
 
+    if (reloadFunc !== undefined) {
+      const reload = reloadFunc({ app })
+      if (reload.then) {
+        await reload
+      }
+    }
+
     return msg
   }
   else {
