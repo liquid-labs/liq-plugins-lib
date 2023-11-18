@@ -1,6 +1,7 @@
 import * as semver from 'semver'
 
 const selectMatchingSeries = ({ hostVersion, registryData }) => {
+  // console.log('registryData:', registryData) // DEBUG
   return Object.entries(registryData).reduce((acc, entry) => {
     const [source, rd] = entry
     const { series } = rd
