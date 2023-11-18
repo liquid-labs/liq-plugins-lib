@@ -26,8 +26,9 @@
   "dependencies": {
     "@liquid-labs/http-smart-response": "^1.0.0-alpha.3",
     "@liquid-labs/liq-handlers-lib": "^1.0.0-alpha.17",
-    "@liquid-labs/npm-toolkit": "^1.0.0-alpha.16",
+    "@liquid-labs/npm-toolkit": "^1.0.0-alpha.17",
     "@liquid-labs/shell-toolkit": "^1.0.0-alpha.4",
+    "dependency-graph": "^0.11.0",
     "http-errors": "^2.0.0",
     "js-yaml": "^4.1.0",
     "semver": "^7.5.3"

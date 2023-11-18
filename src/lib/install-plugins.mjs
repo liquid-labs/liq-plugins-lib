@@ -1,5 +1,9 @@
 import * as fs from 'node:fs/promises'
 
+import { determineRegistryData } from './determine-registry-data'
+import { selectMatchingSeries } from './select-matching-series'
+import { determineInstallationOrder } from './determine-installation-order'
+
 import { install } from '@liquid-labs/npm-toolkit'
 
 const installPlugins = async({
@@ -35,26 +39,40 @@ const installPlugins = async({
 
   let msg = ''
   if (toInstall.length > 0) {
+    const registryData = 
+      await determineRegistryData({ cache, registries : app.ext.serverSettings.registries, reporter })
+    console.log('registryData (installPlugins):', registryData) // DEBUG
+    const pluginSeries = selectMatchingSeries({ hostVersion, registryData })
+    console.log('pluginSeries:', pluginSeries) // DEBUG
+    const installSeries = await determineInstallationOrder({ installedPlugins, pluginSeries, toInstall })
+
     await fs.mkdir(pluginPkgDir, { recursive : true })
 
-    const { localPackages, productionPackages } =
-      await install({ devPaths : app.ext.devPaths, packages : toInstall, projectPath : pluginPkgDir })
+    const allLocalPackages = []
+    const allProductionPackages = []
+    for (const series of installSeries) {
+      const { localPackages, productionPackages } =
+        await install({ devPaths : app.ext.devPaths, packages : series, projectPath : pluginPkgDir })
 
-    if (localPackages.length > 0) {
-      msg += '<em>Installed<rst> <code>' + localPackages.join('<rst>, <code>') + '<rst> local packages\n'
+      allLocalPackages.push(...localPackages)
+      allProductionPackages.push(...productionPackages)
+
+      if (reloadFunc !== undefined) {
+        const reload = reloadFunc({ app })
+        if (reload.then) {
+          await reload
+        }
+      }
     }
-    if (productionPackages.length > 0) {
-      msg += '<em>Installed<rst> <code>' + productionPackages.join('<rst>, <code>') + '<rst> production packages\n'
+
+    if (allLocalPackages.length > 0) {
+      msg += '<em>Installed<rst> <code>' + allLocalPackages.join('<rst>, <code>') + '<rst> local packages\n'
+    }
+    if (allProductionPackages.length > 0) {
+      msg += '<em>Installed<rst> <code>' + allProductionPackages.join('<rst>, <code>') + '<rst> production packages\n'
     }
     if (alreadyInstalled.length > 0) {
       msg += '<code>' + alreadyInstalled.join('<rst>, <code>') + '<rst> <em>already installed<rst>.'
-    }
-
-    if (reloadFunc !== undefined) {
-      const reload = reloadFunc({ app })
-      if (reload.then) {
-        await reload
-      }
     }
 
     return msg

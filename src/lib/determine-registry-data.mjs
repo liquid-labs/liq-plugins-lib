@@ -27,6 +27,7 @@ const determineRegistryData = async({ cache, registries = [], reporter, update }
           throw createError.InternalServerError(`Could not load registry data from ${registryURL}: ${e.message}`, { cause : e })
         }
       }
+      console.log('text:', text) // DEBUG
       let json
       try {
         json = registryURL.endsWith('.yaml') ? yaml.load(text) : JSON.parse(text)
