@@ -3,32 +3,32 @@ import { DepGraph } from 'dependency-graph'
 import { getPackageOrgBasenameAndVersion } from '@liquid-labs/npm-toolkit'
 
 const determineInstallationOrder = async({ installedPlugins, pluginSeries, toInstall }) => {
-  console.log('pluginSeries (determineInstallationOrder):', pluginSeries) // DEBUG
+  // console.error('pluginSeries (determineInstallationOrder):', pluginSeries) // DEBUG
 
   const pluginEntries = pluginSeries.reduce((acc, series) => {
-    console.log('series (determineInstallationOrder):', series) // DEBUG
+    // console.log('series (determineInstallationOrder):', series) // DEBUG
     const { plugins } = series
-    console.log('plugins:', plugins) // DEBUG
+    // console.log('plugins:', plugins) // DEBUG
     for (const pluginList of Object.values(plugins)) {
-      console.log('pluginList:', pluginList) // DEBUG
+      // console.log('pluginList:', pluginList) // DEBUG
       acc.push(...pluginList)
     }
     return acc
   }, [])
 
-  console.log('pluginEntries:', pluginEntries) // DEBUG
+  // console.log('pluginEntries:', pluginEntries) // DEBUG
 
   const graph = new DepGraph()
   const toInstallClone = structuredClone(toInstall)
 
   for (const packageToInstall of toInstallClone) {
-    console.log('packageToInstall:', packageToInstall) // DEBUG
+    // console.log('packageToInstall:', packageToInstall) // DEBUG
     if (!graph.hasNode(packageToInstall)) {
       graph.addNode(packageToInstall)
     }
 
     const { name } = await getPackageOrgBasenameAndVersion(packageToInstall)
-    console.log('name:', name) // DEBUG
+    // console.log('name:', name) // DEBUG
 
     const { dependencies = [] } = pluginEntries.find((e) => e.npmName === name)
     for (const dependency of dependencies) {

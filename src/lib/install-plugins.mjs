@@ -39,11 +39,11 @@ const installPlugins = async({
 
   let msg = ''
   if (toInstall.length > 0) {
-    const registryData = 
+    const registryData =
       await determineRegistryData({ cache, registries : app.ext.serverSettings.registries, reporter })
-    console.log('registryData (installPlugins):', registryData) // DEBUG
+    // console.log('registryData (installPlugins):', registryData) // DEBUG
     const pluginSeries = selectMatchingSeries({ hostVersion, registryData })
-    console.log('pluginSeries:', pluginSeries) // DEBUG
+    // console.log('pluginSeries:', pluginSeries) // DEBUG
     const installSeries = await determineInstallationOrder({ installedPlugins, pluginSeries, toInstall })
 
     await fs.mkdir(pluginPkgDir, { recursive : true })
