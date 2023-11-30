@@ -30,7 +30,7 @@ const determineInstallationOrder = async({ installedPlugins, pluginSeries, toIns
     const { name } = await getPackageOrgBasenameAndVersion(packageToInstall)
     // console.log('name:', name) // DEBUG
 
-    const { dependencies = [] } = pluginEntries.find((e) => e.npmName === name)
+    const { dependencies = [] } = pluginEntries.find((e) => e.npmName === name) || {}
     for (const dependency of dependencies) {
       if (installedPlugins.includes(dependency)) {
         continue
