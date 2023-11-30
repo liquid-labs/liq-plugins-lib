@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/liquid-labs/liq-plugins-lib#readme",
   "dependencies": {
-    "@liquid-labs/http-smart-response": "^1.0.0-alpha.3",
+    "@liquid-labs/http-smart-response": "^1.0.0-alpha.4",
     "@liquid-labs/liq-handlers-lib": "^1.0.0-alpha.17",
     "@liquid-labs/npm-toolkit": "^1.0.0-alpha.17",
     "@liquid-labs/shell-toolkit": "^1.0.0-alpha.4",
