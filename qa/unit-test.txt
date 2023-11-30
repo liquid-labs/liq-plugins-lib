@@ -1,0 +1,28 @@
+Test git rev: 320cadab59d45cb4c806853ed6e3e0675771fa91
+PASS lib/test/determine-installation-order.test.js
+PASS lib/test/determine-registry-data.test.js
+PASS lib/test/select-matching-plugins.test.js
+-----------------------------------|---------|----------|---------|---------|-------------------
+File                               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-----------------------------------|---------|----------|---------|---------|-------------------
+All files                          |   31.06 |    30.98 |   19.29 |   31.98 |                   
+ src                               |       0 |        0 |       0 |       0 |                   
+  add-plugins-setup.mjs            |       0 |        0 |       0 |       0 | 1-65              
+  details-plugin-setup.mjs         |       0 |        0 |       0 |       0 | 1-30              
+  index.mjs                        |       0 |        0 |       0 |       0 | 1-5               
+  list-plugins-setup.mjs           |       0 |        0 |       0 |       0 | 1-144             
+  remove-plugins-setup.mjs         |       0 |        0 |       0 |       0 | 1-43              
+ src/lib                           |   60.29 |    50.57 |   57.89 |    60.3 |                   
+  determine-installation-order.mjs |     100 |    83.33 |     100 |     100 | 33                
+  determine-registry-data.mjs      |   86.66 |    73.68 |     100 |    86.2 | 19,27,36,40       
+  index.mjs                        |       0 |        0 |       0 |       0 | 1-4               
+  install-plugins.mjs              |       0 |        0 |       0 |       0 | 1-90              
+  select-matching-plugins.mjs      |   85.71 |    57.14 |   66.66 |    92.3 | 12                
+  select-matching-series.mjs       |     100 |      100 |     100 |     100 |                   
+-----------------------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 3 passed, 3 total
+Tests:       10 passed, 10 total
+Snapshots:   0 total
+Time:        0.414 s, estimated 1 s
+Ran all test suites.
